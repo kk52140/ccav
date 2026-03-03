@@ -1,0 +1,40 @@
+name: 明日天气推送
+
+on:
+  schedule:
+    # 每天晚上18:00推送明日天气
+    - cron: '0 18 * * *'
+  # 支持手动触发
+  workflow_dispatch:
+
+jobs:
+  push-tomorrow-weather:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v3
+      
+      - name: 设置Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: 安装依赖
+        run: |
+          pip install requests
+          pip install pytz
+      
+      - name: 显示当前时间
+        run: |
+          echo "🕐 执行时间: $(date '+%Y-%m-%d %H:%M:%S')"
+          echo "🌙 任务类型: 明日天气推送"
+      
+      - name: 运行明日天气脚本
+        run: |
+          echo "🚀 开始推送明日天气..."
+          python weather.py tomorrow
+      
+      - name: 执行完成
+        if: always()
+        run: |
+          echo "✅ 明日天气推送任务执行完毕"
