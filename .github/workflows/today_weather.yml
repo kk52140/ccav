@@ -2,8 +2,8 @@ name: 今日天气推送
 
 on:
   schedule:
-    # 每天早上7:30推送今日天气
-    - cron: '30 7 * * *'
+    # 北京时间 7:30 = UTC 23:30（前一天晚上）
+    - cron: '30 23 * * *'
   # 支持手动触发
   workflow_dispatch:
 
@@ -14,6 +14,19 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v3
       
+      - name: 查看文件列表（调试用）
+        run: |
+          echo "📁 当前目录文件:"
+          ls -la
+          echo ""
+          echo "📁 确认 weather.py 是否存在:"
+          if [ -f "weather.py" ]; then
+            echo "✅ weather.py 存在"
+          else
+            echo "❌ weather.py 不存在！"
+            exit 1
+          fi
+      
       - name: 设置Python
         uses: actions/setup-python@v4
         with:
@@ -22,16 +35,17 @@ jobs:
       - name: 安装依赖
         run: |
           pip install requests
-          pip install pytz
       
-      - name: 显示当前时间
+      - name: 显示当前时间（北京时间）
         run: |
-          echo "🕐 执行时间: $(date '+%Y-%m-%d %H:%M:%S')"
+          echo "🕐 UTC时间: $(date -u)"
+          echo "🕐 北京时间: $(TZ='Asia/Shanghai' date)"
           echo "🌞 任务类型: 今日天气推送"
       
       - name: 运行今日天气脚本
         run: |
           echo "🚀 开始推送今日天气..."
+          echo "执行命令: python weather.py today"
           python weather.py today
       
       - name: 执行完成
