@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 WX_WEBHOOK = 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=68910e58-fcfc-4a50-96b5-df810275aba1'
 
 # 小区名称
-COMMUNITY_NAME = "铂宸府物业服务中心"
+COMMUNITY_NAME = "铂宸府"
 
 def send_to_wechat(content):
     """发送消息到企业微信机器人"""
