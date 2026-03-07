@@ -109,19 +109,19 @@ def get_dress_advice(weather_type, high_temp, low_temp, is_today=False):
     return advice
 
 def get_property_message(weather_type=None):
-    """生成物业管家专属结束语（根据天气情况选择不同的暖心提示）"""
+    """生成管家专属结束语（根据天气情况选择不同的暖心提示）"""
     
     # 基础暖心提示池
     base_messages = [
-        f"\n🏢 【{COMMUNITY_NAME}物业温馨提示】\n无论天气如何变化，我们始终在您身边。如需帮助，请致电物业服务中心：XXXX-XXXXXXXX",
+        f"\n🏢 【{COMMUNITY_NAME}温馨提示】\n无论天气如何变化，我们始终在您身边。如需帮助，请致电服务中心：XXXX-XXXXXXXX",
         
-        f"\n🏢 【{COMMUNITY_NAME}物业暖心提醒】\n美好的一天从天气预报开始！如有报修或咨询，欢迎联系物业。",
+        f"\n🏢 【{COMMUNITY_NAME}暖心提醒】\n美好的一天从天气预报开始！如有报修或咨询，欢迎联系。",
         
-        f"\n🏢 【{COMMUNITY_NAME}物业管家服务】\n我是您的专属管家，有任何需求随时找我。祝您今日心情愉快！",
+        f"\n🏢 【{COMMUNITY_NAME}管家服务】\n我是您的专属管家，有任何需求随时找我。祝您今日心情愉快！",
         
-        f"\n🏢 【{COMMUNITY_NAME}物业】\n天气多变，注意身体。我们将继续努力，为您创造更舒适的居住环境。",
+        f"\n🏢 【{COMMUNITY_NAME}】\n天气多变，注意身体。我们将继续努力，为您创造更舒适的居住环境。",
         
-        f"\n🏢 【{COMMUNITY_NAME}物业】\n您的满意是我们最大的动力！"
+        f"\n🏢 【{COMMUNITY_NAME}】\n您的满意是我们最大的动力！"
     ]
     
     # 根据天气情况选择特定的暖心提示
@@ -130,35 +130,35 @@ def get_property_message(weather_type=None):
     if weather_type:
         if "雨" in weather_type:
             weather_messages.append(
-                f"\n🏢 【{COMMUNITY_NAME}物业雨天提醒】\n雨天路滑，出行请注意安全。如需帮助，请随时联系我们。"
+                f"\n🏢 【{COMMUNITY_NAME}雨天提醒】\n雨天路滑，出行请注意安全。如需帮助，请随时联系我们。"
             )
         elif "雪" in weather_type:
             weather_messages.append(
-                f"\n🏢 【{COMMUNITY_NAME}物业雪天提醒】\n雪天路滑，请注意出行安全，老人小孩尽量减少外出。"
+                f"\n🏢 【{COMMUNITY_NAME}雪天提醒】\n雪天路滑，请注意出行安全，老人小孩尽量减少外出。"
             )
         elif "大风" in weather_type or "狂风" in weather_type:
             weather_messages.append(
-                f"\n🏢 【{COMMUNITY_NAME}物业大风提醒】\n大风天气，请关好门窗，收好阳台物品，注意高空坠物。"
+                f"\n🏢 【{COMMUNITY_NAME}大风提醒】\n大风天气，请关好门窗，收好阳台物品，注意高空坠物。"
             )
         elif "雾" in weather_type or "霾" in weather_type:
             weather_messages.append(
-                f"\n🏢 【{COMMUNITY_NAME}物业雾霾提醒】\n雾霾天气，建议佩戴口罩，减少户外活动，注意行车安全。"
+                f"\n🏢 【{COMMUNITY_NAME}雾霾提醒】\n雾霾天气，建议佩戴口罩，减少户外活动，注意行车安全。"
             )
         elif "晴" in weather_type and int(''.join(filter(str.isdigit, high_temp)) if 'high_temp' in locals() else 20) >= 30:
             weather_messages.append(
-                f"\n🏢 【{COMMUNITY_NAME}物业高温提醒】\n高温天气，请注意防暑降温，多补充水分，避免长时间日晒。"
+                f"\n🏢 【{COMMUNITY_NAME}高温提醒】\n高温天气，请注意防暑降温，多补充水分，避免长时间日晒。"
             )
         elif "晴" in weather_type:
             weather_messages.append(
-                f"\n🏢 【{COMMUNITY_NAME}物业】\n天气晴朗，适合晾晒和户外活动，祝您心情愉快！"
+                f"\n🏢 【{COMMUNITY_NAME}】\n天气晴朗，适合晾晒和户外活动，祝您心情愉快！"
             )
     
     # 周末特定提醒
     weekday = datetime.now().weekday()
     if weekday == 4:  # 周五
-        weather_messages.append(f"\n🏢 【{COMMUNITY_NAME}物业祝您周末愉快】\n提前祝您周末快乐！如需帮助，我们随时在线。")
+        weather_messages.append(f"\n🏢 【{COMMUNITY_NAME}祝您周末愉快】\n提前祝您周末快乐！如需帮助，我们随时在线。")
     elif weekday == 0:  # 周一
-        weather_messages.append(f"\n🏢 【{COMMUNITY_NAME}物业】\n新的一周开始啦！祝您工作顺利，心情愉快！")
+        weather_messages.append(f"\n🏢 【{COMMUNITY_NAME}】\n新的一周开始啦！祝您工作顺利，心情愉快！")
     
     # 合并所有消息池
     all_messages = weather_messages + base_messages
@@ -195,7 +195,7 @@ def get_weather(weather_type='tomorrow'):
             # 生成穿衣建议（包含天气预警）
             dress_advice = get_dress_advice(weather_type_str, high_temp, low_temp, is_today=(weather_type=='today'))
             
-            # 生成物业暖心提示（根据天气情况）
+            # 生成暖心提示（根据天气情况）
             property_message = get_property_message(weather_type_str)
             
             weather_info = (
