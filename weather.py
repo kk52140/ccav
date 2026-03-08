@@ -8,7 +8,7 @@ import sys
 from datetime import datetime
 
 # 企业微信机器人 Webhook 地址
-WX_WEBHOOK = 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=68910e58-fcfc-4a50-96b5-df810275aba1'
+WX_WEBHOOK = ''
 
 # 小区名称
 COMMUNITY_NAME = "铂宸府物业服务中心"
