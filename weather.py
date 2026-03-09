@@ -7,7 +7,7 @@ import json
 import random
 import sys
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # ==============================
 # 环境变量配置（避免明文）
@@ -259,7 +259,8 @@ def get_property_message():
         f"🏢 {COMMUNITY_NAME}\n忙碌一周辛苦了，愿您以舒适心情迎接周末生活。\n物业服务中心将持续守护您的安心与便利。"
     ]
 
-    weekday = datetime.now().weekday()
+    beijing_time = datetime.utcnow() + timedelta(hours=8)
+    weekday = beijing_time.weekday()
 
     if weekday == 0:
         return random.choice(monday_messages)
