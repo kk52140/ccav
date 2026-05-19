@@ -9,6 +9,7 @@ on:
 
 jobs:
   yongsheng-weather:
+
     runs-on: ubuntu-latest
 
     env:
@@ -26,10 +27,24 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: 安装 requests
+      - name: 安装依赖
         run: |
-          pip install requests
+          python -m pip install --upgrade pip
+          pip install requests lunar-python
 
-      - name: 测试运行
+      - name: 显示运行时间
         run: |
-          echo "永升天气推送工作流运行成功"
+          echo "UTC时间:"
+          date -u
+
+          echo "北京时间:"
+          TZ='Asia/Shanghai' date
+
+      - name: 执行天气推送
+        run: |
+          python weather.py tomorrow
+
+      - name: 执行完成
+        if: always()
+        run: |
+          echo "永升天气推送完成"
