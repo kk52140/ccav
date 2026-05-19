@@ -12,7 +12,7 @@ jobs:
 
     env:
       WX_WEBHOOK: ${{ secrets.WX_YONGSHENG }}
-      COMMUNITY_NAME: ${{ secrets.COMMUNITY_NAME }}
+      COMMUNITY_NAME: ${{ secrets.COMMUNITY_bochenfu }}
       CITY_CODE: ${{ secrets.CITY_CODE }}
 
     steps:
