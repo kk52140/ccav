@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      WX_WEBHOOK: ${{ secrets.WX_WEBHOOK }}
+      WX_WEBHOOK: ${{ secrets.WX_YONGSHENG }}
       COMMUNITY_NAME: ${{ secrets.COMMUNITY_NAME }}
       CITY_CODE: ${{ secrets.CITY_CODE }}
 
