@@ -1,0 +1,35 @@
+name: 永升天气推送
+
+on:
+  schedule:
+    # 中国时间下午5:30（UTC 09:30）
+    - cron: '30 9 * * *'
+
+  workflow_dispatch:
+
+jobs:
+  yongsheng-weather:
+    runs-on: ubuntu-latest
+
+    env:
+      WX_WEBHOOK: ${{ secrets.WX_YONGSHENG }}
+      COMMUNITY_NAME: ${{ secrets.COMMUNITY_bochenfu }}
+      CITY_CODE: ${{ secrets.CITY_CODE }}
+
+    steps:
+
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: 安装 requests
+        run: |
+          pip install requests
+
+      - name: 测试运行
+        run: |
+          echo "永升天气推送工作流运行成功"
