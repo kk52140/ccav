@@ -14,7 +14,7 @@ from lunar_python import Solar
 # GitHub Secrets 环境变量
 # ==========================================
 
-WEBHOOK_URL = os.getenv("WX_YONGSHENG")
+WEBHOOK_URL = os.getenv("WX_WEBHOOK")
 
 COMMUNITY_NAME = os.getenv(
     "COMMUNITY_NAME",
