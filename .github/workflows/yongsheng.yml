@@ -1,9 +1,10 @@
-
 name: 永升天气推送
 
 on:
   schedule:
-    # 中国时间下午5:30（UTC 09:30）
+    # 中国时间下午5:30
+    # GitHub 使用 UTC 时间
+    # 北京时间 17:30 = UTC 09:30
     - cron: '30 9 * * *'
 
   workflow_dispatch:
@@ -16,7 +17,7 @@ jobs:
     env:
       WX_WEBHOOK: ${{ secrets.WX_YONGSHENG }}
       COMMUNITY_NAME: ${{ secrets.COMMUNITY_bochenfu }}
-      CITY_CODE: ${{ secrets.CITY_CODE }}
+      CITY_CODE: 101070101
 
     steps:
 
@@ -33,6 +34,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests lunar-python
 
+      - name: 查看当前文件
+        run: |
+          echo "===== 根目录 ====="
+          ls -la
+
+          echo "===== yongsheng目录 ====="
+          ls -la yongsheng
+
       - name: 显示运行时间
         run: |
           echo "UTC时间:"
@@ -41,11 +50,11 @@ jobs:
           echo "北京时间:"
           TZ='Asia/Shanghai' date
 
-      - name: 执行天气推送
+      - name: 执行永升天气推送
         run: |
-          python weather.py tomorrow
+          python yongsheng/weather_yongsheng.py tomorrow
 
       - name: 执行完成
         if: always()
         run: |
-          echo "永升天气推送完成"
+          echo "✅ 永升天气推送完成"
