@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 
 import os
@@ -13,6 +12,10 @@ from lunar_python import Solar
 # ==========================================
 # GitHub Secrets 环境变量
 # ==========================================
+
+# GitHub Actions:
+# env:
+#   WX_WEBHOOK: ${{ secrets.WX_YONGSHENG }}
 
 WEBHOOK_URL = os.getenv("WX_WEBHOOK")
 
@@ -95,7 +98,7 @@ def get_weather_icon(weather_type):
 
 
 # ==========================================
-# 周一 / 周末 / 周五特殊文案
+# 周一 / 周五 / 周末文案
 # ==========================================
 
 def get_morning_message():
@@ -252,6 +255,10 @@ def get_weather():
 
 def send_to_wechat(content):
 
+    print("===== 开始检测Webhook =====")
+
+    print("WEBHOOK_URL:", WEBHOOK_URL)
+
     if not WEBHOOK_URL:
 
         print("❌ 未检测到 WX_WEBHOOK 环境变量")
@@ -289,7 +296,11 @@ def send_to_wechat(content):
             timeout=10
         )
 
+        print("HTTP状态码:", response.status_code)
+
         result = response.json()
+
+        print("企业微信返回:", result)
 
         if result.get('errcode') == 0:
 
@@ -319,6 +330,10 @@ def main():
     print("🚀 开始执行永升天气推送...")
 
     message, success = get_weather()
+
+    print("===== 天气内容 =====")
+
+    print(message)
 
     if success:
 
