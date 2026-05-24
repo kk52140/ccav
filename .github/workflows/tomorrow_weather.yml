@@ -1,21 +1,30 @@
-name: 明日天气推送
+name: H1号楼考拉专属天气推送
 
 on:
   schedule:
-    # 北京时间 18:00 = UTC 10:00
+    # 北京时间 17:40 = UTC 09:40
     - cron: '40 9 * * *'
+
   workflow_dispatch:
 
 jobs:
-  push-tomorrow-weather:
+  push-h1-weather:
+
     runs-on: ubuntu-latest
 
     env:
       WX_WEBHOOK: ${{ secrets.WX_WEBHOOK }}
-      COMMUNITY_NAME: ${{ secrets.COMMUNITY_NAME }}
+
+      COMMUNITY_NAME: 铂宸府物业服务中心
+
+      BUILDING_NAME: H1号楼
+
+      STAFF_NAME: 考拉
+
       CITY_CODE: ${{ secrets.CITY_CODE }}
 
     steps:
+
       - name: 检出代码
         uses: actions/checkout@v4
 
@@ -23,7 +32,9 @@ jobs:
         run: |
           echo "📁 当前目录文件:"
           ls -la
+
           echo ""
+
           if [ -f "weather.py" ]; then
             echo "✅ weather.py 存在"
           else
@@ -44,9 +55,17 @@ jobs:
       - name: 检查环境变量
         run: |
           echo "🕐 UTC时间: $(date -u)"
+
           echo "🕐 北京时间: $(TZ='Asia/Shanghai' date)"
-          echo "🌙 任务类型: 明日天气推送"
+
+          echo "🌙 任务类型: H1号楼考拉专属明日天气推送"
+
           echo "🏢 COMMUNITY_NAME: ${COMMUNITY_NAME:-未设置}"
+
+          echo "🏠 BUILDING_NAME: ${BUILDING_NAME:-未设置}"
+
+          echo "👤 STAFF_NAME: ${STAFF_NAME:-未设置}"
+
           echo "🏙️ CITY_CODE: ${CITY_CODE:-未设置}"
 
           if [ -z "$WX_WEBHOOK" ]; then
@@ -56,10 +75,10 @@ jobs:
 
       - name: 运行明日天气脚本
         run: |
-          echo "🚀 开始推送明日天气..."
+          echo "🚀 开始推送 H1号楼 明日天气..."
           python weather.py tomorrow
 
       - name: 执行完成
         if: always()
         run: |
-          echo "✅ 明日天气推送任务执行完毕"
+          echo "✅ H1号楼考拉专属天气推送任务执行完毕"
