@@ -5,7 +5,7 @@ import requests
 import json
 import random
 
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from lunar_python import Solar
 
 
@@ -27,12 +27,12 @@ CITY_CODE = os.getenv(
 
 def get_lunar_info():
 
-    today = date.today()
+    tomorrow = date.today() + timedelta(days=1)
 
     solar = Solar.fromYmd(
-        today.year,
-        today.month,
-        today.day
+        tomorrow.year,
+        tomorrow.month,
+        tomorrow.day
     )
 
     lunar = solar.getLunar()
@@ -55,9 +55,9 @@ def get_day_number():
 
     start_date = date(2026, 1, 1)
 
-    today = date.today()
+    tomorrow = date.today() + timedelta(days=1)
 
-    delta = today - start_date
+    delta = tomorrow - start_date
 
     return delta.days + 1
 
@@ -94,7 +94,9 @@ def get_weather_icon(weather_type):
 
 def get_festival_message(lunar):
 
-    solar_today = datetime.now().strftime("%m-%d")
+    solar_tomorrow = (
+        datetime.now() + timedelta(days=1)
+    ).strftime("%m-%d")
 
     lunar_month = lunar.getMonth()
     lunar_day = lunar.getDay()
@@ -121,8 +123,8 @@ def get_festival_message(lunar):
     if lunar_key in lunar_festivals:
         return lunar_festivals[lunar_key]
 
-    if solar_today in solar_festivals:
-        return solar_festivals[solar_today]
+    if solar_tomorrow in solar_festivals:
+        return solar_festivals[solar_tomorrow]
 
     return ""
 
@@ -168,7 +170,7 @@ def get_jieqi_message(jieqi):
 def get_air_quality_notice(aqi):
 
     try:
-        aqi = int(aqi)
+        aqi = int(float(aqi))
 
         if aqi <= 50:
             return "🌿 空气质量优，适宜户外活动。"
@@ -194,7 +196,7 @@ def get_weather_warning(weather_type, high_temp):
     warnings = []
 
     try:
-        high = int(high_temp)
+        high = int(float(high_temp))
     except:
         high = 25
 
@@ -224,7 +226,8 @@ def get_weather_warning(weather_type, high_temp):
 
 def get_daily_message():
 
-    weekday = datetime.now().weekday()
+    tomorrow = datetime.now() + timedelta(days=1)
+    weekday = tomorrow.weekday()
 
     if weekday == 0:
         return random.choice([
@@ -268,25 +271,25 @@ def get_weather():
 
         if d['status'] == 200:
 
-            today_weather = d['data']['forecast'][0]
+            tomorrow_weather = d['data']['forecast'][1]
 
-            weather_type = today_weather['type']
+            weather_type = tomorrow_weather['type']
 
             high_temp = (
-                today_weather['high']
+                tomorrow_weather['high']
                 .replace('高温 ', '')
                 .replace('℃', '')
             )
 
             low_temp = (
-                today_weather['low']
+                tomorrow_weather['low']
                 .replace('低温 ', '')
                 .replace('℃', '')
             )
 
             weather_icon = get_weather_icon(weather_type)
 
-            today = datetime.now()
+            tomorrow = datetime.now() + timedelta(days=1)
 
             weekdays = [
                 "星期一",
@@ -298,9 +301,8 @@ def get_weather():
                 "星期日"
             ]
 
-            weekday = weekdays[today.weekday()]
-
-            date_str = today.strftime("%Y年%m月%d日")
+            weekday = weekdays[tomorrow.weekday()]
+            date_str = tomorrow.strftime("%Y年%m月%d日")
 
             lunar_text, jieqi, lunar = get_lunar_info()
 
@@ -314,20 +316,34 @@ def get_weather():
             air_notice = get_air_quality_notice(aqi)
             warning_msg = get_weather_warning(weather_type, high_temp)
 
-            message = (
+            message_parts = [
+                f"【永升早安语录·Day{day_num}】",
+                f"📅 {date_str} {weekday}",
+                f"🌙 {lunar_text}",
+            ]
 
-                f"【永升早安语录·Day{day_num}】\n\n"
-                f"📅 {date_str} {weekday}\n"
-                f"🌙 {lunar_text}\n\n"
-                f"{festival_msg}\n"
-                f"{jieqi_msg}\n\n"
-                f"{weather_icon} 天气：{weather_type}\n"
-                f"🌡️ 气温：{low_temp}℃ ~ {high_temp}℃\n"
-                f"🌿 PM2.5：{aqi}\n\n"
-                f"{air_notice}\n\n"
-                f"{warning_msg}\n\n"
-                f"{daily_msg}\n"
-            )
+            if festival_msg:
+                message_parts.append(festival_msg)
+
+            if jieqi_msg:
+                message_parts.append(jieqi_msg)
+
+            message_parts.extend([
+                f"{weather_icon} 天气：{weather_type}",
+                f"🌡️ 气温：{low_temp}℃ ~ {high_temp}℃",
+                f"🌿 PM2.5：{aqi}",
+            ])
+
+            if air_notice:
+                message_parts.append(air_notice)
+
+            if warning_msg:
+                message_parts.append(warning_msg)
+
+            if daily_msg:
+                message_parts.append(daily_msg)
+
+            message = "\n".join(message_parts)
 
             return message, True
 
