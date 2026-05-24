@@ -91,78 +91,32 @@ def get_weather_warning(weather_type, high_temp, low_temp):
     reminders = []
 
     if high >= 35:
-        reminders.append(
-            "🔥 天气炎热，请注意防暑降温，尽量减少午后长时间户外停留。"
-        )
-
+        reminders.append("🔥 天气炎热，请注意防暑降温，尽量减少午后长时间户外停留。")
     elif high >= 30:
-        reminders.append(
-            "🥤 气温较高，外出请注意防晒，并及时补充水分。"
-        )
-
+        reminders.append("🥤 气温较高，外出请注意防晒，并及时补充水分。")
     elif high <= 0:
-        reminders.append(
-            "🧣 气温较低，外出请注意添衣保暖。"
-        )
-
+        reminders.append("🧣 气温较低，外出请注意添衣保暖。")
     elif high <= 10:
-        reminders.append(
-            "🧥 早晚温差较明显，建议适当增添外套。"
-        )
+        reminders.append("🧥 早晚温差较明显，建议适当增添外套。")
 
     if "暴雨" in weather_type:
-
-        reminders.append(
-            "⛈️ 暴雨天气，请提前规划出行，注意避开低洼积水路段。"
-        )
-
+        reminders.append("⛈️ 暴雨天气，请提前规划出行，注意避开低洼积水路段。")
     elif "大雨" in weather_type:
-
-        reminders.append(
-            "🌧️ 降雨较明显，出门请携带雨具，注意道路湿滑。"
-        )
-
+        reminders.append("🌧️ 降雨较明显，出门请携带雨具，注意道路湿滑。")
     elif "中雨" in weather_type:
-
-        reminders.append(
-            "☔ 有降雨天气，建议随身携带雨具，出行注意安全。"
-        )
-
+        reminders.append("☔ 有降雨天气，建议随身携带雨具，出行注意安全。")
     elif "小雨" in weather_type or "雨" in weather_type:
-
-        reminders.append(
-            "☂️ 出门建议备好雨具，注意脚下安全。"
-        )
-
+        reminders.append("☂️ 出门建议备好雨具，注意脚下安全。")
     elif "暴雪" in weather_type or "大雪" in weather_type:
-
-        reminders.append(
-            "❄️ 降雪天气，路面湿滑，请注意慢行，谨慎出行。"
-        )
-
+        reminders.append("❄️ 降雪天气，路面湿滑，请注意慢行，谨慎出行。")
     elif "中雪" in weather_type or "小雪" in weather_type or "雪" in weather_type:
-
-        reminders.append(
-            "🌨️ 有降雪天气，请注意防寒保暖及出行安全。"
-        )
-
+        reminders.append("🌨️ 有降雪天气，请注意防寒保暖及出行安全。")
     elif "大风" in weather_type or "狂风" in weather_type:
-
-        reminders.append(
-            "💨 风力较大，请留意门窗关闭，并妥善安置阳台物品。"
-        )
-
+        reminders.append("💨 风力较大，请留意门窗关闭，并妥善安置阳台物品。")
     elif "雾" in weather_type:
-
-        reminders.append(
-            "🌫️ 能见度较低，驾车出行请减速慢行，注意安全。"
-        )
-
+        reminders.append("🌫️ 能见度较低，驾车出行请减速慢行，注意安全。")
     elif "霾" in weather_type:
-
-        reminders.append(
-            "😷 空气质量一般，敏感人群外出请做好防护。"
-        )
+        reminders.append("😷 空气质量一般，敏感人群外出请做好防护。")
 
     return "\n".join(reminders)
 
@@ -183,40 +137,17 @@ def get_dress_advice(weather_type, high_temp, low_temp, is_today=False):
     advice = f"👔 【{time_desc}着装建议】\n"
 
     if high >= 30:
-
-        advice += (
-            f"{time_desc}气温偏高，建议选择轻薄透气衣物，外出注意防晒。"
-        )
-
+        advice += f"{time_desc}气温偏高，建议选择轻薄透气衣物，外出注意防晒。"
     elif high >= 25:
-
-        advice += (
-            f"{time_desc}体感较为舒适，建议着轻便服装，早晚可酌情搭配薄外套。"
-        )
-
+        advice += f"{time_desc}体感较为舒适，建议着轻便服装，早晚可酌情搭配薄外套。"
     elif high >= 20:
-
-        advice += (
-            f"{time_desc}气温适宜，建议着长袖上衣或薄外套，出行较为舒适。"
-        )
-
+        advice += f"{time_desc}气温适宜，建议着长袖上衣或薄外套，出行较为舒适。"
     elif high >= 15:
-
-        advice += (
-            f"{time_desc}天气偏凉，建议着针织衫、卫衣或外套，注意早晚保暖。"
-        )
-
+        advice += f"{time_desc}天气偏凉，建议着针织衫、卫衣或外套，注意早晚保暖。"
     elif high >= 5:
-
-        advice += (
-            f"{time_desc}气温较低，建议着保暖外套，适当做好防寒准备。"
-        )
-
+        advice += f"{time_desc}气温较低，建议着保暖外套，适当做好防寒准备。"
     else:
-
-        advice += (
-            f"{time_desc}天气寒冷，建议着羽绒服、大衣等保暖衣物，注意防寒保暖。"
-        )
+        advice += f"{time_desc}天气寒冷，建议着羽绒服、大衣等保暖衣物，注意防寒保暖。"
 
     warning = get_weather_warning(
         weather_type,
@@ -231,36 +162,56 @@ def get_dress_advice(weather_type, high_temp, low_temp, is_today=False):
 
 
 # ==============================
-# 随机物业结尾
+# H1号楼专属物业结尾
 # ==============================
 
 def get_property_message():
 
-    messages = [
+    weekday = datetime.now().weekday()
 
-        f"🏡 {COMMUNITY_NAME} · {BUILDING_NAME}管家{STAFF_NAME} 祝您生活愉快，出行顺利。",
+    normal_messages = [
 
-        f"🏡 {COMMUNITY_NAME} · {BUILDING_NAME}管家{STAFF_NAME} 愿您与家人平安顺遂，天天好心情。",
+        f"🏡 {BUILDING_NAME}专属提醒｜我是管家{STAFF_NAME}，{COMMUNITY_NAME}祝您生活愉快，出行顺利。",
 
-        f"🏡 {COMMUNITY_NAME} · {BUILDING_NAME}管家{STAFF_NAME} 愿您今日万事顺意，归家一路安心。",
+        f"🏡 {BUILDING_NAME}业主朋友您好，我是管家{STAFF_NAME}，愿您与家人平安顺遂，天天好心情。",
+
+        f"🏡 {BUILDING_NAME}管家{STAFF_NAME}温馨提醒：愿您出行平安，归家有暖。",
+
+        f"🏡 来自{COMMUNITY_NAME} · {BUILDING_NAME}管家{STAFF_NAME}的天气提醒，祝您生活舒心、万事顺意。",
+
+        f"🏡 {BUILDING_NAME}业主专属服务｜管家{STAFF_NAME}愿您今日好心情，生活更从容。",
+
+        f"🏡 {BUILDING_NAME}管家{STAFF_NAME}提醒您：天气变化请留意，愿您与家人平安健康。",
 
         f"🏡 {COMMUNITY_NAME} · {BUILDING_NAME}管家{STAFF_NAME} 感谢您的理解与支持，祝您生活愉快。",
 
-        f"🏡 {COMMUNITY_NAME} · {BUILDING_NAME}管家{STAFF_NAME} 愿美好常伴左右，幸福如期而至。",
-
-        f"🏡 {COMMUNITY_NAME} · {BUILDING_NAME}管家{STAFF_NAME} 愿您工作顺利，生活舒心。",
-
-        f"🏡 {COMMUNITY_NAME} · {BUILDING_NAME}管家{STAFF_NAME} 祝您与家人平安健康，阖家幸福。",
-
-        f"🏡 {COMMUNITY_NAME} · {BUILDING_NAME}管家{STAFF_NAME} 愿每一天都有温暖与好心情。",
-
-        f"🏡 {COMMUNITY_NAME} · {BUILDING_NAME}管家{STAFF_NAME} 愿您出行平安，归家有暖。",
-
-        f"🏡 {COMMUNITY_NAME} · {BUILDING_NAME}管家{STAFF_NAME} 祝您今日顺顺利利，生活愉快。"
-
+        f"🏡 {BUILDING_NAME}专属天气提醒由管家{STAFF_NAME}为您送达，愿您出行顺利、居家安心。"
     ]
 
-    return random.choice(messages)
+    friday_messages = [
+
+        f"🌇 周末将至，{BUILDING_NAME}管家{STAFF_NAME}愿您卸下一周疲惫，迎接轻松时光。",
+
+        f"🏡 {BUILDING_NAME}管家{STAFF_NAME}提前祝您周末愉快，愿归家皆有温暖。",
+
+        f"✨ 周末即将开启，{COMMUNITY_NAME} · {BUILDING_NAME}管家{STAFF_NAME}祝您生活惬意、心情舒畅。"
+    ]
+
+    monday_messages = [
+
+        f"☀️ 新的一周开始啦，{BUILDING_NAME}管家{STAFF_NAME}愿您工作顺利、万事顺心。",
+
+        f"💼 周一早安，{COMMUNITY_NAME} · {BUILDING_NAME}管家{STAFF_NAME}愿您开启元气满满的一周。",
+
+        f"🌿 新周启程，{BUILDING_NAME}管家{STAFF_NAME}祝您生活舒心、出行平安。"
+    ]
+
+    if weekday == 4:
+        return random.choice(friday_messages)
+    elif weekday == 0:
+        return random.choice(monday_messages)
+    else:
+        return random.choice(normal_messages)
 
 
 # ==============================
@@ -284,13 +235,10 @@ def get_weather(weather_type='tomorrow'):
         if d['status'] == 200:
 
             if weather_type == 'today':
-
                 index = 0
                 title = "【今日天气提醒】"
                 time_desc = "今日"
-
             else:
-
                 index = 1
                 title = "【明日天气提醒】"
                 time_desc = "明日"
@@ -298,9 +246,7 @@ def get_weather(weather_type='tomorrow'):
             weather_data = d['data']['forecast'][index]
 
             weather_type_str = weather_data['type']
-
             high_temp = weather_data['high']
-
             low_temp = weather_data['low']
 
             dress_advice = get_dress_advice(
@@ -343,7 +289,6 @@ def get_weather(weather_type='tomorrow'):
                 "",
 
                 property_message
-
             ]
 
             weather_info = "\n".join(message_parts)
@@ -351,14 +296,12 @@ def get_weather(weather_type='tomorrow'):
             return weather_info, True
 
         else:
-
             return (
                 f"天气接口返回错误: {d['status']}",
                 False
             )
 
     except Exception as e:
-
         return (
             f"获取天气失败: {e}",
             False
