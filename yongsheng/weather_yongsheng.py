@@ -5,7 +5,7 @@ import requests
 import json
 import random
 
-from datetime import datetime, date, timedelta
+from datetime import datetime, date
 from lunar_python import Solar
 
 
@@ -27,12 +27,12 @@ CITY_CODE = os.getenv(
 
 def get_lunar_info():
 
-    tomorrow = date.today() + timedelta(days=1)
+    today = date.today()
 
     solar = Solar.fromYmd(
-        tomorrow.year,
-        tomorrow.month,
-        tomorrow.day
+        today.year,
+        today.month,
+        today.day
     )
 
     lunar = solar.getLunar()
@@ -55,9 +55,9 @@ def get_day_number():
 
     start_date = date(2026, 1, 1)
 
-    tomorrow = date.today() + timedelta(days=1)
+    today = date.today()
 
-    delta = tomorrow - start_date
+    delta = today - start_date
 
     return delta.days + 1
 
@@ -94,9 +94,7 @@ def get_weather_icon(weather_type):
 
 def get_festival_message(lunar):
 
-    solar_today = (
-        datetime.now() + timedelta(days=1)
-    ).strftime("%m-%d")
+    solar_today = datetime.now().strftime("%m-%d")
 
     lunar_month = lunar.getMonth()
     lunar_day = lunar.getDay()
@@ -173,7 +171,7 @@ def get_air_quality_notice(aqi):
         aqi = int(aqi)
 
         if aqi <= 50:
-            return "🌿 空气质量优，适宜户外活动."
+            return "🌿 空气质量优，适宜户外活动。"
         elif aqi <= 100:
             return "🍃 空气质量良好，可正常外出。"
         elif aqi <= 150:
@@ -270,31 +268,39 @@ def get_weather():
 
         if d['status'] == 200:
 
-            tomorrow_weather = d['data']['forecast'][1]
+            today_weather = d['data']['forecast'][0]
 
-            weather_type = tomorrow_weather['type']
+            weather_type = today_weather['type']
 
             high_temp = (
-                tomorrow_weather['high']
+                today_weather['high']
                 .replace('高温 ', '')
                 .replace('℃', '')
             )
 
             low_temp = (
-                tomorrow_weather['low']
+                today_weather['low']
                 .replace('低温 ', '')
                 .replace('℃', '')
             )
 
             weather_icon = get_weather_icon(weather_type)
 
-            tomorrow = datetime.now() + timedelta(days=1)
+            today = datetime.now()
 
-            weekdays = ["星期一","星期二","星期三","星期四","星期五","星期六","星期日"]
+            weekdays = [
+                "星期一",
+                "星期二",
+                "星期三",
+                "星期四",
+                "星期五",
+                "星期六",
+                "星期日"
+            ]
 
-            weekday = weekdays[tomorrow.weekday()]
+            weekday = weekdays[today.weekday()]
 
-            date_str = tomorrow.strftime("%Y年%m月%d日")
+            date_str = today.strftime("%Y年%m月%d日")
 
             lunar_text, jieqi, lunar = get_lunar_info()
 
