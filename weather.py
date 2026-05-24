@@ -4,10 +4,8 @@
 import os
 import requests
 import json
-import random
 import sys
 import re
-from datetime import datetime, timedelta
 
 
 # ==============================
@@ -45,9 +43,16 @@ def extract_temp(temp_text, default=20):
 
     try:
 
-        match = re.search(r'-?\d+', str(temp_text))
+        match = re.search(
+            r'-?\d+',
+            str(temp_text)
+        )
 
-        return int(match.group()) if match else default
+        return (
+            int(match.group())
+            if match
+            else default
+        )
 
     except Exception:
 
@@ -62,7 +67,9 @@ def format_pm25(pm25_value):
 
     try:
 
-        return str(int(float(pm25_value)))
+        return str(
+            int(float(pm25_value))
+        )
 
     except Exception:
 
@@ -131,10 +138,6 @@ def get_weather_level(
     low_temp,
     wind_level_text
 ):
-
-    high = extract_temp(high_temp, 20)
-
-    low = extract_temp(low_temp, 10)
 
     wind_level_num = 0
 
@@ -217,8 +220,7 @@ def get_weather_warning(
         if "雪" in weather_type:
 
             return (
-                "降雪天气道路湿滑，"
-                "请注意减速慢行。"
+                "降雪天气道路湿滑，请注意减速慢行。"
             )
 
         elif "风" in weather_type:
@@ -242,15 +244,13 @@ def get_weather_warning(
     if weather_level == "rain":
 
         return (
-            "降雨天气道路湿滑，"
-            "请注意出行安全。"
+            "降雨天气道路湿滑，请注意出行安全。"
         )
 
     if high - low >= 8:
 
         return (
-            "昼夜温差较大，"
-            "请注意及时增减衣物。"
+            "昼夜温差较大，请注意及时增减衣物。"
         )
 
     return (
@@ -269,44 +269,29 @@ def get_dress_advice(
 
     high = extract_temp(high_temp, 20)
 
-    time_desc = (
-        "今日"
-        if is_today
-        else "明日"
-    )
-
     if high >= 30:
 
-        text = (
-            "建议穿着轻薄透气衣物，"
-            "外出注意防晒。"
+        return (
+            "建议穿着轻薄透气衣物，外出注意防晒。"
         )
 
     elif high >= 25:
 
-        text = (
-            "建议着轻便服装，"
-            "早晚可搭配薄外套。"
+        return (
+            "建议着轻便服装，早晚可搭配薄外套。"
         )
 
     elif high >= 15:
 
-        text = (
-            "建议穿着长袖或薄外套，"
-            "注意早晚温差。"
+        return (
+            "建议穿着长袖或薄外套，注意早晚温差。"
         )
 
     else:
 
-        text = (
-            "建议做好保暖措施，"
-            "外出注意添衣。"
+        return (
+            "建议做好保暖措施，外出注意添衣。"
         )
-
-    return (
-        f"👔 {time_desc}着装建议\n"
-        f"{text}"
-    )
 
 
 # ==============================
@@ -329,29 +314,25 @@ def build_weather_notice(
         if "雨" in weather_type:
 
             return (
-                "今日降雨较明显，"
-                "请提前做好出行安排。"
+                "今日降雨较明显，请提前做好出行安排。"
             )
 
         elif "雪" in weather_type:
 
             return (
-                "今日有降雪天气，"
-                "请注意防寒保暖。"
+                "今日有降雪天气，请注意防寒保暖。"
             )
 
         else:
 
             return (
-                "今日天气变化明显，"
-                "请注意安全防护。"
+                "今日天气变化明显，请注意安全防护。"
             )
 
     elif weather_level == "rain":
 
         return (
-            "今日有降雨天气，"
-            "建议随身携带雨具。"
+            "今日有降雨天气，建议随身携带雨具。"
         )
 
     else:
@@ -365,60 +346,20 @@ def build_weather_notice(
         elif "阴" in weather_type:
 
             return (
-                "天气以阴天为主，"
-                "请注意及时增减衣物。"
+                "天气以阴天为主，请注意及时增减衣物。"
             )
 
         elif high - low >= 8:
 
             return (
-                "昼夜温差较明显，"
-                "请注意及时增减衣物。"
+                "昼夜温差较明显，请注意及时增减衣物。"
             )
 
         else:
 
             return (
-                "天气较平稳，"
-                "适宜日常出行。"
+                "天气较平稳，适宜日常出行。"
             )
-
-
-# ==============================
-# H1号楼专属结尾
-# ==============================
-
-def get_property_message():
-
-    messages = [
-
-        (
-            f"🏡 {COMMUNITY_NAME}\n"
-            f"{BUILDING_NAME}管家{STAFF_NAME}提醒您："
-            f"天气变化请留意，祝您生活舒心、出行顺利。"
-        ),
-
-        (
-            f"🏡 {COMMUNITY_NAME}\n"
-            f"{BUILDING_NAME}管家{STAFF_NAME}祝您与家人"
-            f"平安顺遂，天天好心情。"
-        ),
-
-        (
-            f"🏡 {COMMUNITY_NAME}\n"
-            f"{BUILDING_NAME}管家{STAFF_NAME}"
-            f"愿您出行平安，归家有暖。"
-        ),
-
-        (
-            f"🏡 {COMMUNITY_NAME}\n"
-            f"{BUILDING_NAME}管家{STAFF_NAME}"
-            f"感谢您的理解与支持。"
-        )
-
-    ]
-
-    return random.choice(messages)
 
 
 # ==============================
@@ -515,10 +456,6 @@ def get_weather(weather_type='tomorrow'):
             weather_level
         )
 
-        property_message = (
-            get_property_message()
-        )
-
         if weather_level == "severe":
 
             title = "【天气安全提醒】"
@@ -550,15 +487,14 @@ def get_weather(weather_type='tomorrow'):
             f"{weather_data['fx']} "
             f"{weather_data['fl']}\n\n"
 
-            f"📢 {title_prefix}天气提示\n"
-            f"{weather_notice}\n\n"
+            f"📢 {weather_notice}\n"
 
-            f"{dress_advice}\n\n"
+            f"👔 {dress_advice}\n"
 
-            f"🚶 出行提醒\n"
-            f"{travel_warning}\n\n"
+            f"🚶 {travel_warning}\n\n"
 
-            f"{property_message}"
+            f"🏡 {BUILDING_NAME}管家{STAFF_NAME}\n"
+            f"祝您生活愉快，出行顺利。"
 
         )
 
