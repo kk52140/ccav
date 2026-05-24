@@ -9,13 +9,16 @@ import sys
 import re
 from datetime import datetime, timedelta
 
+
 # ==============================
-# 环境变量配置（避免明文）
+# 环境变量配置
 # ==============================
 
 WX_WEBHOOK = os.getenv("WX_WEBHOOK")
 COMMUNITY_NAME = os.getenv("COMMUNITY_NAME", "铂宸府物业服务中心")
-CITY_CODE = os.getenv("CITY_CODE", "101070101")  # 默认沈阳
+BUILDING_NAME = os.getenv("BUILDING_NAME", "H1号楼")
+STAFF_NAME = os.getenv("STAFF_NAME", "考拉")
+CITY_CODE = os.getenv("CITY_CODE", "101070101")
 
 
 # ==============================
@@ -23,7 +26,6 @@ CITY_CODE = os.getenv("CITY_CODE", "101070101")  # 默认沈阳
 # ==============================
 
 def extract_temp(temp_text, default=20):
-    """从 '高温 5℃' / '低温 -4℃' 中提取整数温度"""
     try:
         match = re.search(r'-?\d+', str(temp_text))
         return int(match.group()) if match else default
@@ -32,7 +34,6 @@ def extract_temp(temp_text, default=20):
 
 
 def format_pm25(pm25_value):
-    """格式化 PM2.5 数值"""
     try:
         return str(int(float(pm25_value)))
     except Exception:
@@ -44,11 +45,11 @@ def format_pm25(pm25_value):
 # ==============================
 
 def send_to_wechat(content):
-    """发送消息到企业微信机器人"""
     if not WX_WEBHOOK:
         raise RuntimeError("未配置 WX_WEBHOOK 环境变量")
 
     headers = {'Content-Type': 'application/json'}
+
     data = {
         "msgtype": "text",
         "text": {
@@ -63,6 +64,7 @@ def send_to_wechat(content):
             data=json.dumps(data, ensure_ascii=False),
             timeout=10
         )
+
         result = response.json()
 
         if result.get('errcode') == 0:
@@ -79,17 +81,11 @@ def send_to_wechat(content):
 # ==============================
 
 def get_weather_level(weather_type, high_temp, low_temp, wind_level_text):
-    """
-    天气模板级别：
-    normal  = 普通天气
-    rain    = 降雨加强提醒
-    severe  = 恶劣天气安全提醒
-    """
     high = extract_temp(high_temp, 20)
     low = extract_temp(low_temp, 10)
 
-    # 提取风力等级中的数字
     wind_level_num = 0
+
     try:
         match = re.search(r'(\d+)', str(wind_level_text))
         if match:
@@ -97,8 +93,11 @@ def get_weather_level(weather_type, high_temp, low_temp, wind_level_text):
     except Exception:
         wind_level_num = 0
 
-    # 恶劣天气条件
-    severe_keywords = ["暴雨", "大暴雨", "暴雪", "大雪", "中雪", "冰雹", "沙尘暴", "雷暴", "强对流"]
+    severe_keywords = [
+        "暴雨", "大暴雨", "暴雪", "大雪", "中雪",
+        "冰雹", "沙尘暴", "雷暴", "强对流"
+    ]
+
     if any(k in weather_type for k in severe_keywords):
         return "severe"
 
@@ -108,8 +107,10 @@ def get_weather_level(weather_type, high_temp, low_temp, wind_level_text):
     if high <= -10 or low <= -10:
         return "severe"
 
-    # 降雨加强提醒
-    rain_keywords = ["小雨", "中雨", "大雨", "阵雨", "雷阵雨", "雨夹雪"]
+    rain_keywords = [
+        "小雨", "中雨", "大雨", "阵雨", "雷阵雨", "雨夹雪"
+    ]
+
     if any(k in weather_type for k in rain_keywords):
         return "rain"
 
@@ -121,11 +122,9 @@ def get_weather_level(weather_type, high_temp, low_temp, wind_level_text):
 # ==============================
 
 def get_weather_warning(weather_type, high_temp, low_temp, weather_level):
-    """根据天气生成出行提醒"""
     high = extract_temp(high_temp, 20)
     low = extract_temp(low_temp, 10)
 
-    # 恶劣天气
     if weather_level == "severe":
         if "雪" in weather_type:
             return "降雪天气路面可能结冰，请注意出行安全，行走及驾车时请减速慢行。"
@@ -138,11 +137,9 @@ def get_weather_warning(weather_type, high_temp, low_temp, weather_level):
         else:
             return "天气情况较为复杂，请留意安全，合理安排出行。"
 
-    # 降雨天气
     if weather_level == "rain":
         return "降雨天气道路湿滑，步行及驾车请注意安全，尽量预留充足出行时间。"
 
-    # 普通天气
     if high <= 5 or low <= 0:
         return "早晚气温偏低，建议适当增添衣物，合理安排出行时间。"
     elif high - low >= 8:
@@ -156,11 +153,9 @@ def get_weather_warning(weather_type, high_temp, low_temp, weather_level):
 # ==============================
 
 def get_dress_advice(weather_type, high_temp, low_temp, is_today=False):
-    """根据天气生成着装建议"""
     high = extract_temp(high_temp, 20)
-    low = extract_temp(low_temp, 10)
-
     time_desc = "今日" if is_today else "明日"
+
     advice = f"👔 {time_desc}着装建议\n"
 
     if high >= 30:
@@ -184,9 +179,9 @@ def get_dress_advice(weather_type, high_temp, low_temp, is_today=False):
 # ==============================
 
 def build_weather_notice(weather_type, high_temp, low_temp, quality, weather_level):
-    """生成不同级别天气提示"""
     high = extract_temp(high_temp, 20)
     low = extract_temp(low_temp, 10)
+
     notices = []
 
     if weather_level == "severe":
@@ -227,36 +222,42 @@ def build_weather_notice(weather_type, high_temp, low_temp, quality, weather_lev
 
 
 def optimize_ganmao_text(raw_text):
-    """健康提示轻度润色"""
     if not raw_text:
         return "请根据天气变化注意日常健康防护。"
 
     text = str(raw_text).strip()
-    text = text.replace("儿童、老年人及心脏、呼吸系统疾病患者人群", "儿童、老年人及心肺敏感人群")
+    text = text.replace(
+        "儿童、老年人及心脏、呼吸系统疾病患者人群",
+        "儿童、老年人及心肺敏感人群"
+    )
+
     return text
 
 
 # ==============================
-# 物业结尾提示（周一 / 周五特殊版）
+# H1号楼管家专属结尾
 # ==============================
 
 def get_property_message():
-    """物业结束语"""
-
     normal_messages = [
-        f"🏢 {COMMUNITY_NAME}\n感谢您的关注，物业服务中心将持续为您提供细致、安心的服务。",
-        f"🏢 {COMMUNITY_NAME}\n如您在生活服务、设施报修或出行协助方面需要帮助，欢迎随时联系物业服务中心。",
-        f"🏢 {COMMUNITY_NAME}\n天气变化请您留意，物业服务中心将与您一同守护家人与生活的安心。"
+        f"🏡 {BUILDING_NAME}专属提醒｜我是管家{STAFF_NAME}，{COMMUNITY_NAME}祝您生活愉快，出行顺利。",
+        f"🏡 {BUILDING_NAME}业主朋友您好，我是管家{STAFF_NAME}，愿您与家人平安顺遂，天天好心情。",
+        f"🏡 {BUILDING_NAME}管家{STAFF_NAME}温馨提醒：愿您出行平安，归家有暖。",
+        f"🏡 来自{COMMUNITY_NAME} · {BUILDING_NAME}管家{STAFF_NAME}的天气提醒，祝您生活舒心、万事顺意。",
+        f"🏡 {BUILDING_NAME}业主专属服务｜管家{STAFF_NAME}愿您今日好心情，生活更从容。",
+        f"🏡 {BUILDING_NAME}管家{STAFF_NAME}提醒您：天气变化请留意，愿您与家人平安健康。"
     ]
 
     monday_messages = [
-        f"🏢 {COMMUNITY_NAME}\n新的一周已经开启，愿您工作顺遂、生活安然。\n物业服务中心将持续为您守护安心生活。",
-        f"🏢 {COMMUNITY_NAME}\n周一早安，愿您以从容与好心情开启新一周。\n如您有生活服务需求，欢迎随时联系物业服务中心。"
+        f"☀️ 新的一周开始啦，{BUILDING_NAME}管家{STAFF_NAME}愿您工作顺利、万事顺心。",
+        f"💼 周一早安，{COMMUNITY_NAME} · {BUILDING_NAME}管家{STAFF_NAME}愿您开启元气满满的一周。",
+        f"🌿 新周启程，{BUILDING_NAME}管家{STAFF_NAME}祝您生活舒心、出行平安。"
     ]
 
     friday_messages = [
-        f"🏢 {COMMUNITY_NAME}\n周末将至，祝您与家人度过一个轻松愉快的美好时光。\n如您有生活服务需求，物业服务中心随时为您提供协助。",
-        f"🏢 {COMMUNITY_NAME}\n忙碌一周辛苦了，愿您以舒适心情迎接周末生活。\n物业服务中心将持续守护您的安心与便利。"
+        f"🌇 周末将至，{BUILDING_NAME}管家{STAFF_NAME}愿您卸下一周疲惫，迎接轻松时光。",
+        f"🏡 {BUILDING_NAME}管家{STAFF_NAME}提前祝您周末愉快，愿归家皆有温暖。",
+        f"✨ 周末即将开启，{COMMUNITY_NAME} · {BUILDING_NAME}管家{STAFF_NAME}祝您生活惬意、心情舒畅。"
     ]
 
     beijing_time = datetime.utcnow() + timedelta(hours=8)
@@ -337,76 +338,74 @@ def get_weather(weather_type='tomorrow'):
 
         property_message = get_property_message()
 
-        # 标题根据天气级别切换
         if weather_level == "severe":
             title = "【天气安全提醒】"
         else:
             title = f"【{title_prefix}天气提醒】"
 
-        # 普通天气模板
+        common_header = (
+            f"{title}\n\n"
+            f"尊敬的{BUILDING_NAME}业主您好，以下为{title_prefix}天气提醒：\n\n"
+            f"🏙️ 所在城市：{d['cityInfo']['parent']} {d['cityInfo']['city']}\n"
+            f"📅 日期：{weather_data['ymd']} {weather_data['week']}\n"
+        )
+
         if weather_level == "normal":
             weather_info = (
-                f"{title}\n\n"
-                f"尊敬的业主您好，以下为{COMMUNITY_NAME}{title_prefix}天气提醒：\n\n"
-                f"🏙️ 所在城市：{d['cityInfo']['parent']} {d['cityInfo']['city']}\n"
-                f"📅 日期：{weather_data['ymd']} {weather_data['week']}\n"
-                f"☁️ 天气情况：{weather_type_str}\n"
-                f"🌡️ 预计气温：{low_temp}℃ ~ {high_temp}℃\n"
-                f"💧 空气湿度：{d['data']['shidu']}\n"
-                f"🌿 空气质量：{air_quality}（PM2.5：{pm25}）\n"
-                f"💨 风向风力：{weather_data['fx']} {weather_data['fl']}\n\n"
-                f"📢 {title_prefix}天气提示\n"
-                f"{weather_notice}\n\n"
-                f"{dress_advice}\n\n"
-                f"🚶 出行提醒\n"
-                f"{travel_warning}\n\n"
-                f"{property_message}"
+                common_header
+                + f"☁️ 天气情况：{weather_type_str}\n"
+                + f"🌡️ 预计气温：{low_temp}℃ ~ {high_temp}℃\n"
+                + f"💧 空气湿度：{d['data']['shidu']}\n"
+                + f"🌿 空气质量：{air_quality}（PM2.5：{pm25}）\n"
+                + f"💨 风向风力：{weather_data['fx']} {weather_data['fl']}\n\n"
+                + f"📢 {title_prefix}天气提示\n"
+                + f"{weather_notice}\n\n"
+                + f"{dress_advice}\n\n"
+                + f"🚶 出行提醒\n"
+                + f"{travel_warning}\n\n"
+                + f"{property_message}"
             )
 
-        # 降雨天气模板
         elif weather_level == "rain":
             weather_info = (
-                f"{title}\n\n"
-                f"尊敬的业主您好，以下为{COMMUNITY_NAME}{title_prefix}天气提醒：\n\n"
-                f"🏙️ 所在城市：{d['cityInfo']['parent']} {d['cityInfo']['city']}\n"
-                f"📅 日期：{weather_data['ymd']} {weather_data['week']}\n"
-                f"🌧 天气情况：{weather_type_str}\n"
-                f"🌡️ 预计气温：{low_temp}℃ ~ {high_temp}℃\n"
-                f"💧 空气湿度：{d['data']['shidu']}\n"
-                f"🌿 空气质量：{air_quality}（PM2.5：{pm25}）\n"
-                f"💨 风向风力：{weather_data['fx']} {weather_data['fl']}\n\n"
-                f"📢 {title_prefix}天气提示\n"
-                f"{weather_notice}\n\n"
-                f"{dress_advice}\n\n"
-                f"🚶 出行提醒\n"
-                f"{travel_warning}\n\n"
-                f"{property_message}"
+                common_header
+                + f"🌧 天气情况：{weather_type_str}\n"
+                + f"🌡️ 预计气温：{low_temp}℃ ~ {high_temp}℃\n"
+                + f"💧 空气湿度：{d['data']['shidu']}\n"
+                + f"🌿 空气质量：{air_quality}（PM2.5：{pm25}）\n"
+                + f"💨 风向风力：{weather_data['fx']} {weather_data['fl']}\n\n"
+                + f"📢 {title_prefix}天气提示\n"
+                + f"{weather_notice}\n\n"
+                + f"{dress_advice}\n\n"
+                + f"🚶 出行提醒\n"
+                + f"{travel_warning}\n\n"
+                + f"{property_message}"
             )
 
-        # 恶劣天气模板
         else:
             severe_home_tip = ""
+
             if "风" in weather_type_str or extract_temp(weather_data['fl'], 0) >= 6:
-                severe_home_tip = "🏠 居家提示\n请留意关好门窗，并检查阳台物品是否固定。\n\n"
+                severe_home_tip = (
+                    "🏠 居家提示\n"
+                    "请留意关好门窗，并检查阳台物品是否固定。\n\n"
+                )
 
             weather_info = (
-                f"{title}\n\n"
-                f"尊敬的业主您好，以下为{COMMUNITY_NAME}天气提醒：\n\n"
-                f"🏙️ 所在城市：{d['cityInfo']['parent']} {d['cityInfo']['city']}\n"
-                f"📅 日期：{weather_data['ymd']} {weather_data['week']}\n"
-                f"❄️ 天气情况：{weather_type_str}\n"
-                f"🌡️ 预计气温：{low_temp}℃ ~ {high_temp}℃\n"
-                f"💧 空气湿度：{d['data']['shidu']}\n"
-                f"🌿 空气质量：{air_quality}（PM2.5：{pm25}）\n"
-                f"💨 风向风力：{weather_data['fx']} {weather_data['fl']}\n"
-                f"🩺 健康提示：{ganmao_text}\n\n"
-                f"📢 天气提示\n"
-                f"{weather_notice}\n\n"
-                f"⚠️ 安全提醒\n"
-                f"{travel_warning}\n\n"
-                f"{severe_home_tip}"
-                f"{dress_advice}\n\n"
-                f"{property_message}"
+                common_header
+                + f"❄️ 天气情况：{weather_type_str}\n"
+                + f"🌡️ 预计气温：{low_temp}℃ ~ {high_temp}℃\n"
+                + f"💧 空气湿度：{d['data']['shidu']}\n"
+                + f"🌿 空气质量：{air_quality}（PM2.5：{pm25}）\n"
+                + f"💨 风向风力：{weather_data['fx']} {weather_data['fl']}\n"
+                + f"🩺 健康提示：{ganmao_text}\n\n"
+                + f"📢 天气提示\n"
+                + f"{weather_notice}\n\n"
+                + f"⚠️ 安全提醒\n"
+                + f"{travel_warning}\n\n"
+                + f"{severe_home_tip}"
+                + f"{dress_advice}\n\n"
+                + f"{property_message}"
             )
 
         return weather_info, True
@@ -426,6 +425,7 @@ def main():
         weather_type = sys.argv[1]
 
     type_desc = "今日" if weather_type == 'today' else "明日"
+
     print(f"🚀 开始执行{type_desc}天气推送...")
 
     weather_msg, success = get_weather(weather_type)
