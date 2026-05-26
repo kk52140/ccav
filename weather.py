@@ -314,25 +314,25 @@ def build_weather_notice(
         if "雨" in weather_type:
 
             return (
-                "今日降雨较明显，请提前做好出行安排。"
+                "降雨较明显，请提前做好出行安排。"
             )
 
         elif "雪" in weather_type:
 
             return (
-                "今日有降雪天气，请注意防寒保暖。"
+                "有降雪天气，请注意防寒保暖。"
             )
 
         else:
 
             return (
-                "今日天气变化明显，请注意安全防护。"
+                "天气变化明显，请注意安全防护。"
             )
 
     elif weather_level == "rain":
 
         return (
-            "今日有降雨天气，建议随身携带雨具。"
+            "有降雨天气，建议随身携带雨具。"
         )
 
     else:
