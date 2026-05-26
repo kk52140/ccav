@@ -21,6 +21,8 @@ jobs:
 
       - name: 检出代码
         uses: actions/checkout@v4
+        with:
+        fetch-depth: 1
 
       - name: 设置 Python
         uses: actions/setup-python@v5
