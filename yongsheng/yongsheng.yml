@@ -3,7 +3,7 @@ name: 永升天气推送
 on:
   schedule:
     # 中国时间晚上7:00（UTC 11:00）
-    - cron: '0 11 * * *'
+    - cron: '0 10 * * *'
 
   workflow_dispatch:
 
